@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import Script from 'next/script'
+import AdSlot from '../components/AdSlot'
 import { useEffect, useState } from 'react'
 
 export async function getStaticProps() {
@@ -9,7 +9,12 @@ export async function getStaticProps() {
   const html = fs.readFileSync(filePath, 'utf8')
   const styleMatch = html.match(/<style[^>]*>([\s\S]*?)<\/style>/i)
   const style = styleMatch ? styleMatch[1] : ''
-  return { props: { style } }
+  // Extract body inner HTML and remove inline <script> blocks to avoid duplicate JS execution
+  const bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i)
+  let body = bodyMatch ? bodyMatch[1] : ''
+  // remove all <script>...</script> blocks from the extracted body
+  body = body.replace(/<script[\s\S]*?<\/script>/gi, '')
+  return { props: { style, body } }
 }
 
 const DOG_TABLE = {0:[0,0,0],1:[15,15,15],2:[24,24,24],3:[28,28,28],4:[32,32,32],5:[36,37,40],6:[40,42,45],7:[44,47,50],8:[48,51,55],9:[52,56,61],10:[56,60,66],11:[60,65,72],12:[64,69,77],13:[68,74,82],14:[72,78,88],15:[76,83,93]}
@@ -55,7 +60,7 @@ function catLifeStage(years){
   return 'Senior'
 }
 
-export default function Home({ style }){
+export default function Home({ style, body }){
   const [petType,setPetType] = useState('dog')
   const [dogSize,setDogSize] = useState('small')
   const [years,setYears] = useState('')
@@ -93,16 +98,8 @@ export default function Home({ style }){
     <>
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
         <style dangerouslySetInnerHTML={{__html: style}} />
       </Head>
-      <Script
-        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
-        crossOrigin="anonymous"
-        strategy="afterInteractive"
-      />
 
       <header className="site-header">
         <div className="header-inner">
@@ -167,36 +164,19 @@ export default function Home({ style }){
           </div>
 
           <aside className="ad-placeholder ad-bottom" aria-label="Advertisement">
-            <ins className="adsbygoogle"
-              style={{ display: 'block' }}
-              data-ad-client={ADSENSE_CLIENT}
-              data-ad-slot={ADSENSE_SLOT_LEADERBOARD}
-              data-ad-format="auto"
-              data-full-width-responsive="true"></ins>
-            <Script id="adsbygoogle-bottom" strategy="afterInteractive">
-              {`(adsbygoogle = window.adsbygoogle || []).push({});`}
-            </Script>
+            <AdSlot client={ADSENSE_CLIENT} slot={ADSENSE_SLOT_LEADERBOARD} style={{display:'block'}} />
           </aside>
 
         </main>
 
         <aside className="sidebar" aria-label="Sidebar">
           <div className="ad-placeholder ad-right" aria-label="Advertisement">
-            <ins className="adsbygoogle"
-              style={{ display: 'block' }}
-              data-ad-client={ADSENSE_CLIENT}
-              data-ad-slot={ADSENSE_SLOT_SIDE}
-              data-ad-format="auto"
-              data-full-width-responsive="true"></ins>
-            <Script id="adsbygoogle-side" strategy="afterInteractive">
-              {`(adsbygoogle = window.adsbygoogle || []).push({});`}
-            </Script>
+            <AdSlot client={ADSENSE_CLIENT} slot={ADSENSE_SLOT_SIDE} style={{display:'block'}} />
           </div>
         </aside>
       </div>
 
       <hr className="divider" aria-hidden="true" />
-
       <footer className="site-footer">
         <nav className="footer-nav" aria-label="Footer navigation">
           <button className="footer-link" onClick={()=>openModal('about')}>About</button>
@@ -207,6 +187,9 @@ export default function Home({ style }){
         <div className="footer-sources"><p>Age data: Appendix B of the Dog Owner's Home Veterinary Handbook, 4th Ed.</p></div>
         <p className="footer-copy">&copy; <span id="copy-year">{new Date().getFullYear()}</span>. All rights reserved.</p>
       </footer>
+
+      {/* Insert remaining static content from index.html (articles, FAQ, tables, etc.) */}
+      <div id="legacy-content" dangerouslySetInnerHTML={{ __html: body }} />
 
       {/* Modals */}
       <div className={`modal-backdrop ${openModalId?'open':''}`} onClick={closeModal} aria-hidden={!openModalId}></div>
