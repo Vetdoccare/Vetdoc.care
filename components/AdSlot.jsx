@@ -1,33 +1,3 @@
-import { useEffect } from 'react'
-import Script from 'next/script'
-
-export default function AdSlot({ client, slot, style = { display: 'block' }, format = 'auto', full = true }) {
-  useEffect(() => {
-    try {
-      (window.adsbygoogle = window.adsbygoogle || []).push({})
-    } catch (e) {
-      // ignore push errors (TagError when slot not ready)
-    }
-  }, [])
-
-  return (
-    <>
-      <Script
-        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${client}`}
-        strategy="afterInteractive"
-        crossOrigin="anonymous"
-      />
-      <ins
-        className="adsbygoogle"
-        style={style}
-        data-ad-client={client}
-        data-ad-slot={slot}
-        data-ad-format={format}
-        data-full-width-responsive={full ? 'true' : 'false'}
-      />
-    </>
-  )
-}
 import { useEffect, useRef, useState } from 'react'
 import Script from 'next/script'
 
