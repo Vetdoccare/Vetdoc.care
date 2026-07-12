@@ -1,4 +1,5 @@
 import Head from 'next/head'
+import Script from 'next/script'
 import { useEffect, useState } from 'react'
 
 export async function getStaticProps() {
@@ -62,6 +63,9 @@ export default function Home({ style }){
   const [error,setError] = useState('')
   const [result,setResult] = useState(null)
   const [openModalId,setOpenModalId] = useState(null)
+  const ADSENSE_CLIENT = 'ca-pub-XXXXXXXXXXXX'
+  const ADSENSE_SLOT_LEADERBOARD = '1234567890'
+  const ADSENSE_SLOT_SIDE = '0987654321'
 
   useEffect(()=>{ document.title = 'Dog Years to Human Years Calculator | VetDoc.Care' },[])
 
@@ -94,6 +98,11 @@ export default function Home({ style }){
         <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,700;1,9..144,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet" />
         <style dangerouslySetInnerHTML={{__html: style}} />
       </Head>
+      <Script
+        src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`}
+        crossOrigin="anonymous"
+        strategy="afterInteractive"
+      />
 
       <header className="site-header">
         <div className="header-inner">
@@ -158,13 +167,31 @@ export default function Home({ style }){
           </div>
 
           <aside className="ad-placeholder ad-bottom" aria-label="Advertisement">
-            <span className="ad-label">Advertisement</span><span className="ad-size">728 × 90 — Leaderboard</span>
+            <ins className="adsbygoogle"
+              style={{ display: 'block' }}
+              data-ad-client={ADSENSE_CLIENT}
+              data-ad-slot={ADSENSE_SLOT_LEADERBOARD}
+              data-ad-format="auto"
+              data-full-width-responsive="true"></ins>
+            <Script id="adsbygoogle-bottom" strategy="afterInteractive">
+              {`(adsbygoogle = window.adsbygoogle || []).push({});`}
+            </Script>
           </aside>
 
         </main>
 
         <aside className="sidebar" aria-label="Sidebar">
-          <div className="ad-placeholder ad-right" aria-label="Advertisement"><span className="ad-label">Advertisement</span><span className="ad-size">300 × 600 — Half Page</span></div>
+          <div className="ad-placeholder ad-right" aria-label="Advertisement">
+            <ins className="adsbygoogle"
+              style={{ display: 'block' }}
+              data-ad-client={ADSENSE_CLIENT}
+              data-ad-slot={ADSENSE_SLOT_SIDE}
+              data-ad-format="auto"
+              data-full-width-responsive="true"></ins>
+            <Script id="adsbygoogle-side" strategy="afterInteractive">
+              {`(adsbygoogle = window.adsbygoogle || []).push({});`}
+            </Script>
+          </div>
         </aside>
       </div>
 
